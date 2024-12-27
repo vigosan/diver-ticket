@@ -3,7 +3,7 @@ import { useState } from "react";
 import { usePrinter } from "@/context";
 
 export default function Home() {
-  const [message, setMessage] = useState("Hello World!");
+  const [message, setMessage] = useState("Hola Mundo!");
   const [error, setError] = useState<string | null>(null);
   const { printerIp, printerPort, setPrinterIp, setPrinterPort } = usePrinter();
 
