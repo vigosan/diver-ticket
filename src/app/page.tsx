@@ -44,14 +44,16 @@ export default function Home() {
   };
 
   return (
-    <main className="flex flex-col gap-12 p-4">
+    <main className="flex flex-col gap-12 bg-white p-4 dark:bg-slate-800">
       <div>
-        <h1 className="mb-4 text-2xl text-gray-950">Printer Configuration</h1>
+        <h1 className="mb-4 text-2xl text-gray-950 dark:text-white">
+          Printer Configuration
+        </h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label
               htmlFor="ip"
-              className="block text-sm/6 font-medium text-gray-950"
+              className="block text-sm/6 font-medium text-gray-950 dark:text-slate-400"
             >
               IP Address
             </label>
@@ -66,7 +68,7 @@ export default function Home() {
           <div>
             <label
               htmlFor="port"
-              className="block text-sm/6 font-medium text-gray-950"
+              className="block text-sm/6 font-medium text-gray-950 dark:text-slate-400"
             >
               Port
             </label>
@@ -82,7 +84,7 @@ export default function Home() {
           <div className="mt-6 flex items-center justify-end gap-x-6">
             <button
               type="submit"
-              className="w-full rounded-md bg-gray-950 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-gray-950/80"
+              className="w-full rounded-md bg-gray-950 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-gray-950/80 dark:bg-blue-800 dark:hover:bg-blue-900"
             >
               Save
             </button>
@@ -91,7 +93,9 @@ export default function Home() {
       </div>
 
       <div>
-        <h1 className="mb-4 text-2xl text-gray-950">Send Message</h1>
+        <h1 className="mb-4 text-2xl text-gray-950 dark:text-white">
+          Send Message
+        </h1>
         <div className="space-y-4">
           <textarea
             value={message}
@@ -103,7 +107,7 @@ export default function Home() {
           <div className="mt-6 flex items-center justify-end gap-x-6">
             <button
               onClick={handlePrint}
-              className="w-full rounded-md bg-gray-950 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-gray-950/80"
+              className="w-full rounded-md bg-gray-950 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-gray-950/80 dark:bg-blue-800 dark:hover:bg-blue-900"
             >
               Print
             </button>
