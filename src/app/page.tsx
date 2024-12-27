@@ -1,101 +1,121 @@
-import Image from "next/image";
+"use client";
+import { useState } from "react";
+import { usePrinter } from "@/context";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [message, setMessage] = useState("Hello World!");
+  const [error, setError] = useState<string | null>(null);
+  const { printerIp, printerPort, setPrinterIp, setPrinterPort } = usePrinter();
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!printerIp || !printerPort) {
+      setError("Printer IP and port must be configured.");
+      return;
+    }
+    setError(null);
+    console.log("Printer IP configured:", printerIp);
+  };
+
+  const handlePrint = async () => {
+    if (!printerIp || !printerPort) {
+      setError("Printer IP and port must be configured.");
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/print", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ip: printerIp, port: printerPort, message }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to print the message");
+      }
+
+      setError(null);
+      console.log("Message sent to the printer");
+    } catch (error) {
+      setError("Error: " + (error as Error).message);
+    }
+  };
+
+  return (
+    <main className="flex flex-col gap-12 p-4">
+      <div>
+        <h1 className="mb-4 text-2xl text-gray-950">Printer Configuration</h1>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label
+              htmlFor="ip"
+              className="block text-sm/6 font-medium text-gray-950"
+            >
+              IP Address
+            </label>
+            <input
+              type="text"
+              id="ip"
+              value={printerIp}
+              onChange={(e) => setPrinterIp(e.target.value)}
+              className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-950 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-gray-950 sm:text-sm/6"
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          </div>
+          <div>
+            <label
+              htmlFor="port"
+              className="block text-sm/6 font-medium text-gray-950"
+            >
+              Port
+            </label>
+            <input
+              type="number"
+              id="port"
+              value={printerPort}
+              onChange={(e) => setPrinterPort(Number(e.target.value))}
+              className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-950 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-gray-950 sm:text-sm/6"
+            />
+          </div>
+
+          <div className="mt-6 flex items-center justify-end gap-x-6">
+            <button
+              type="submit"
+              className="w-full rounded-md bg-gray-950 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-gray-950/80"
+            >
+              Save
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div>
+        <h1 className="mb-4 text-2xl text-gray-950">Send Message</h1>
+        <div className="space-y-4">
+          <textarea
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            rows={4}
+            className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-950 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-gray-950 sm:text-sm/6"
+          />
+
+          <div className="mt-6 flex items-center justify-end gap-x-6">
+            <button
+              onClick={handlePrint}
+              className="w-full rounded-md bg-gray-950 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-gray-950/80"
+            >
+              Print
+            </button>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      </div>
+
+      {error && (
+        <div className="mt-4 text-red-600">
+          <p>{error}</p>
+        </div>
+      )}
+    </main>
   );
 }
