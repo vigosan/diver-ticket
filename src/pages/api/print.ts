@@ -3,20 +3,19 @@ import net from "node:net";
 import EscPosEncoder from "esc-pos-encoder";
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  console.log('ASDASDASD');
   if (req.method !== "POST") {
     res.setHeader("Allow", ["POST"]);
     return res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 
-  const { ip, message } = req.body;
+  const { ip, message, port = 9100 } = req.body;
 
   if (!ip || !message) {
     return res.status(400).json({ error: "IP and message are required" });
   }
 
   const client = new net.Socket();
-  client.connect(9100, ip, () => {
+  client.connect(port, ip, () => {
     const encoder = new EscPosEncoder();
     const result = encoder.initialize().text(message).newline().encode();
     client.write(result);
